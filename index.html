@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Come First Serve (FCFS) </title>
+    <style>
+        /* Add your CSS styles for the Gantt chart here */
+        .gantt {
+            display: flex;
+        }
+
+        .gantt-bar {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #007bff;
+            background-color: #007bff;
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #000;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>First Come First Serve (FCFS) </h1>
+    <table>
+        <tr>
+            <th>Process</th>
+            <th>Arrival Time</th>
+            <th>Burst Time</th>
+            <th>Waiting Time</th>
+            <th>Turnaround Time</th>
+        </tr>
+    </table>
+    
+    <h2>Gantt Chart:</h2>
+    <div class="gantt" id="gantt-chart"></div>
+    <p>Average Waiting Time: <span id="avg-waiting-time"></span></p>
+    <p>Average Turnaround Time: <span id="avg-turnaround-time"></span></p>
+
+    <script>
+        const processes = [
+            { name: 'P1', arrivalTime: 0, burstTime: 6 },
+            { name: 'P2', arrivalTime: 1, burstTime: 8 },
+            { name: 'P3', arrivalTime: 2, burstTime: 7 },
+            { name: 'P4', arrivalTime: 3, burstTime: 3 },
+        ];
+
+        processes.sort((a, b) => a.arrivalTime - b.arrivalTime);
+
+        let currentTime = 0;
+        let ganttChart = '';
+        let totalWaitingTime = 0;
+        let totalTurnaroundTime = 0;
+
+        for (let i = 0; i < processes.length; i++) {
+            const waitingTime = currentTime - processes[i].arrivalTime;
+            const turnaroundTime = waitingTime + processes[i].burstTime;
+
+            // Build Gantt chart
+            ganttChart += `<div class="gantt-bar">${processes[i].name} (${currentTime}-${currentTime + processes[i].burstTime})</div>`;
+
+            // Update the HTML table with results
+            const table = document.querySelector('table');
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td>${processes[i].name}</td>
+                <td>${processes[i].arrivalTime}</td>
+                <td>${processes[i].burstTime}</td>
+                <td>${waitingTime}</td>
+                <td>${turnaroundTime}</td>
+            `;
+
+            // Update current time
+            currentTime += processes[i].burstTime;
+            totalWaitingTime += waitingTime;
+            totalTurnaroundTime += turnaroundTime;
+        }
+
+        // Calculate and display average waiting time and turnaround time
+        const avgWaitingTime = totalWaitingTime / processes.length;
+        const avgTurnaroundTime = totalTurnaroundTime / processes.length;
+        document.getElementById('avg-waiting-time').textContent = avgWaitingTime.toFixed(2);
+        document.getElementById('avg-turnaround-time').textContent = avgTurnaroundTime.toFixed(2);
+
+        // Display the Gantt chart
+        document.getElementById('gantt-chart').innerHTML = ganttChart;
+    </script>
+</body>
+</html>
